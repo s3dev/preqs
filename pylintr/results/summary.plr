@@ -1,5 +1,17 @@
 Pylint Summary:
 ------------------------
+build_mod0.plr: 0.00/10
+build_mod1.plr: 0.00/10
+build_mod2.plr: 0.00/10
+pkg0_mod0.plr:
+pkg1_mod0.plr: 0.00/10
 preqs_preqs.plr: 10.00/10
+project_mod0.plr: 0.00/10
+subpkg0_submod0.plr:
+subpkg0_submod1.plr: 0.00/10
+testlibs_msgs.plr: 10.00/10
+tests_base.plr: 10.00/10
+tests_template.plr: 10.00/10
+tests_test_preqs.plr: 10.00/10
 ------------------------
-Run date: Mon 5 Aug 17:02:09 BST 2024
+Run date: Tue 6 Aug 17:24:37 BST 2024

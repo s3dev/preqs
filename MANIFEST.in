@@ -1,0 +1,4 @@
+# Note: This applies to the source dist (sdist) only.
+
+# Single files to be included.
+include requirements.txt
