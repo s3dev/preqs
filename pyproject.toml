@@ -1,0 +1,37 @@
+[build-system]
+requires = ['wheel', 'setuptools', 'setuptools-scm']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'preqs'
+version = '0.1.0.dev1'
+description = 'A simple (and fast) requirements.txt file generator.'
+authors = [{name = 'J. Berendt', email = 'support@s3dev.uk'}]
+classifiers = [
+               'Programming Language :: Python :: 3.6',
+               'Programming Language :: Python :: 3.7',
+               'Programming Language :: Python :: 3.8',
+               'Programming Language :: Python :: 3.9',
+               'Programming Language :: Python :: 3.10',
+               'Programming Language :: Python :: 3.11',
+               'Programming Language :: Python :: 3.12',
+               'License :: OSI Approved :: MIT License',
+               'Operating System :: POSIX :: Linux',
+               'Operating System :: Microsoft :: Windows',
+               'Operating System :: Microsoft :: Windows :: Windows 7',
+               'Operating System :: Microsoft :: Windows :: Windows 10',
+               'Operating System :: Microsoft :: Windows :: Windows 11',
+               'Topic :: Software Development',
+               'Topic :: Software Development :: Libraries',
+               'Topic :: Utilities'
+              ]
+dependencies = []
+license = {file = 'LICENSE'}
+readme = {file = 'README.md', content-type = 'text/markdown'}
+requires-python = '>=3.6'
+
+[tool.setuptools]
+py-modules = ['preqs']
+
+[project.scripts]
+preqs = 'preqs:Requirements.run'
