@@ -6,7 +6,6 @@ README.md
 build.sh
 pyproject.toml
 requirements.txt
-dist/preqs-0.1.0b1-py3-none-any.whl
 preqs/NOTICE
 preqs/__init__.py
 preqs/_version.py

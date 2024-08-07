@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: preqs
-Version: 0.1.0b1
+Version: 0.1.0b2
 Summary: A simple (and fast) requirements.txt file generator.
 Author-email: The Developers <development@s3dev.uk>
 License: GNU GPL-3
