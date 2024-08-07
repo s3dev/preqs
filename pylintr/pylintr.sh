@@ -72,8 +72,9 @@ fi
 # Determine which .pylintrc file to use.
 [ -f "../.pylintrc" ] && rcfile='--rcfile=../.pylintrc' || rcfile=""
 
-# RUN PYLINT OVER ALL *.PY FILES (EXCLUDE docs DIRECTORY)
-for f in $( /usr/bin/find ../ -name "*.py" | grep -v "docs" ); do
+# RUN PYLINT OVER ALL *.PY FILES (EXCLUDE docs AND resources DIRECTORIES)
+#for f in $( /usr/bin/find ../ -name "*.py" | grep -v "docs" ); do
+for f in $( /usr/bin/find ../ -name "*.py" | grep -vE "docs|resources" ); do
     bname=$( basename ${f} )
     dname=$( basename $( dirname ${f} ) )_
     [ $dname = ".._" ] && dname=""

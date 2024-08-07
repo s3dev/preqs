@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/tests-passing-brightgreen) ![Static Badge](https://img.shields.io/badge/coverage-100%25-brightgreen)  ![Static Badge](https://img.shields.io/badge/pylint_analysis-100%25-brightgreen)
+
 # A simple (and fast) requirements.txt file generator
 The `preqs` project is a cross-platform, simple, fast and easy-to-use requirements file generator. Your project's imported dependencies are collected into a `requirements.txt` file. No more, no less.
 
@@ -5,7 +7,7 @@ The `preqs` project is a cross-platform, simple, fast and easy-to-use requiremen
 ## Installation
 Installing `preqs` is quick and easy. As a design feature, the library does not have any external (non-built-in) dependencies.
 ```
-pip install pipreqs
+pip install preqs
 ```
 
 ## Usage
@@ -88,9 +90,9 @@ preqs --replace
 The version number you see in the requirements file output is obtained using the built-in `importlib` library. Therefore, the package *must be installed* in the environment being used to run `preqs`.
 
 - By design, we do *not* use PyPI to obtain version numbers as this practice usually involves assuming the latest version - whereas this may not be the case for your project.
-- Any packages which are known to be imported by the project, and yet do not appear in the requirements file, *may not be installed*. Run `preqs` with the `--print` flag to observe any packages which are imported for which the version number could not be obtained. These are ignored when the requirements file is written.
+- Any packages which are known to be imported by the project, and yet do not appear in the requirements file, *are likely not installed* in the environment. Run `preqs` with the `--print` flag to observe any packages which are imported for which the version number could not be obtained. These 'unknown version' packages are (currently) ignored when the requirements file is written.
 
-### I don't see a specific package in the requirements file
+### I don't see a specific package in the requirements file.
 Refer to the *How is the version number obtained?* question.
 
 ### Why should I not just use `pip freeze`?

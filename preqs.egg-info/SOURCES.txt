@@ -6,11 +6,11 @@ README.md
 build.sh
 pyproject.toml
 requirements.txt
-dist/preqs-0.1.0.dev1-py3-none-any.whl
+dist/preqs-0.1.0b1-py3-none-any.whl
+preqs/NOTICE
 preqs/__init__.py
 preqs/_version.py
 preqs/preqs.py
-preqs/requirements.txt
 preqs.egg-info/PKG-INFO
 preqs.egg-info/SOURCES.txt
 preqs.egg-info/dependency_links.txt
@@ -20,6 +20,10 @@ pylintr/generate_rcfile.sh
 pylintr/pylintr.sh
 pylintr/results/preqs_preqs.plr
 pylintr/results/summary.plr
+pylintr/results/testlibs_msgs.plr
+pylintr/results/tests_base.plr
+pylintr/results/tests_template.plr
+pylintr/results/tests_test_preqs.plr
 tests/.coverage
 tests/.coveragerc
 tests/__init__.py

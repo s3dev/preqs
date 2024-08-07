@@ -43,7 +43,6 @@ class ArgParser:
     _proj = 'preqs'
     _vers = __version__
     _desc = 'A simple (and fast) requirements.txt file generator.'
-    _epil = f'{_proj} v{_vers}'
     _usag = 'preqs [PATH] [options]'
     _h_dbug = 'Print verbose debugging output while processing.'
     _h_dirs = 'One or more director(y|ies) to be ignored when collecting module files.'
@@ -58,6 +57,7 @@ class ArgParser:
     def __init__(self):
         """Argument parser class initialiser."""
         self._args = None
+        self._epil = self._build_epilog()
 
     @property
     def args(self):
@@ -70,7 +70,7 @@ class ArgParser:
         argp = argparse.ArgumentParser(prog=self._proj,
                                        usage=self._usag,
                                        description=self._desc,
-                                       epilog=self._epil.format(self._proj, self._vers),
+                                       epilog=self._epil,
                                        formatter_class=argparse.RawTextHelpFormatter,
                                        add_help=False)
         # Order matters here as it affects the display -->
@@ -82,6 +82,20 @@ class ArgParser:
         argp.add_argument('-h', '--help', help=self._h_help, action='help')
         argp.add_argument('-v', '--version', help=self._h_vers, action='version', version=self._epil)
         self._args = argp.parse_args()
+
+    def _build_epilog(self) -> str:
+        """Build the epilog string for terminal display.
+
+        Returns:
+            str: A string containing the text to be displayed in the
+            epilog of the help menu.
+
+        """
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'NOTICE')
+        with open(path, 'r', encoding='utf-8') as f:
+            notice = f.read()
+        epil = f'{notice}\n\n{self._proj} v{self._vers}'
+        return epil
 
 
 class CodeParser:
@@ -419,8 +433,9 @@ class Requirements:
         logging.debug('All imports being reported: %s', self._imps)
         logging.debug('All requirements being reported: %s', self._reqs)
         if self._excode == ExCode.GEN_OK:
-            print()
-            logging.info('The requirements file has been written here:\n- %s\n', self._ofile)
+            if not self._args.print:
+                print()
+                logging.info('The requirements file has been written here:\n- %s\n', self._ofile)
         elif self._excode == ExCode.ERR_FILES:
             print()
             logging.warning('No Python modules found in this project.\n')

@@ -1,34 +1,17 @@
 Metadata-Version: 2.1
 Name: preqs
-Version: 0.1.0.dev1
+Version: 0.1.0b1
 Summary: A simple (and fast) requirements.txt file generator.
-Author-email: "J. Berendt" <support@s3dev.uk>
-License: 
-        MIT License
-        
-        Copyright (c) 2024 | 73rd Street Development
-        
-        Permission is hereby granted, free of charge, to any person obtaining a copy
-        of this software and associated documentation files (the "Software"), to deal
-        in the Software without restriction, including without limitation the rights
-        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-        copies of the Software, and to permit persons to whom the Software is
-        furnished to do so, subject to the following conditions:
-        
-        The above copyright notice and this permission notice shall be included in all
-        copies or substantial portions of the Software.
-        
-        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-        SOFTWARE.
-        
-        
+Author-email: The Developers <development@s3dev.uk>
+License: GNU GPL-3
 Project-URL: Homepage, https://github.com/s3dev/preqs
 Project-URL: Repository, https://github.com/s3dev/preqs
+Keywords: build,development,requirements,setup,utilities
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft :: Windows
 Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
@@ -36,18 +19,13 @@ Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: POSIX :: Linux
-Classifier: Operating System :: Microsoft :: Windows
-Classifier: Operating System :: Microsoft :: Windows :: Windows 7
-Classifier: Operating System :: Microsoft :: Windows :: Windows 10
-Classifier: Operating System :: Microsoft :: Windows :: Windows 11
 Classifier: Topic :: Software Development
-Classifier: Topic :: Software Development :: Libraries
 Classifier: Topic :: Utilities
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
+
+![Static Badge](https://img.shields.io/badge/tests-passing-brightgreen) ![Static Badge](https://img.shields.io/badge/coverage-100%25-brightgreen)  ![Static Badge](https://img.shields.io/badge/pylint_analysis-100%25-brightgreen)
 
 # A simple (and fast) requirements.txt file generator
 The `preqs` project is a cross-platform, simple, fast and easy-to-use requirements file generator. Your project's imported dependencies are collected into a `requirements.txt` file. No more, no less.
@@ -56,7 +34,7 @@ The `preqs` project is a cross-platform, simple, fast and easy-to-use requiremen
 ## Installation
 Installing `preqs` is quick and easy. As a design feature, the library does not have any external (non-built-in) dependencies.
 ```
-pip install pipreqs
+pip install preqs
 ```
 
 ## Usage
@@ -139,9 +117,9 @@ preqs --replace
 The version number you see in the requirements file output is obtained using the built-in `importlib` library. Therefore, the package *must be installed* in the environment being used to run `preqs`.
 
 - By design, we do *not* use PyPI to obtain version numbers as this practice usually involves assuming the latest version - whereas this may not be the case for your project.
-- Any packages which are known to be imported by the project, and yet do not appear in the requirements file, *may not be installed*. Run `preqs` with the `--print` flag to observe any packages which are imported for which the version number could not be obtained. These are ignored when the requirements file is written.
+- Any packages which are known to be imported by the project, and yet do not appear in the requirements file, *are likely not installed* in the environment. Run `preqs` with the `--print` flag to observe any packages which are imported for which the version number could not be obtained. These 'unknown version' packages are (currently) ignored when the requirements file is written.
 
-### I don't see a specific package in the requirements file
+### I don't see a specific package in the requirements file.
 Refer to the *How is the version number obtained?* question.
 
 ### Why should I not just use `pip freeze`?

@@ -5,8 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "preqs"
 description = "A simple (and fast) requirements.txt file generator."
-authors = [{name = "J. Berendt", email = "support@s3dev.uk"}]
+authors = [{name = "The Developers", email = "development@s3dev.uk"}]
 classifiers = [
+               "Development Status :: 4 - Beta",
+               "Intended Audience :: Developers",
+               "License :: OSI Approved :: MIT License",
+               "Operating System :: POSIX :: Linux",
+               "Operating System :: Microsoft :: Windows",
                "Programming Language :: Python :: 3.6",
                "Programming Language :: Python :: 3.7",
                "Programming Language :: Python :: 3.8",
@@ -14,19 +19,19 @@ classifiers = [
                "Programming Language :: Python :: 3.10",
                "Programming Language :: Python :: 3.11",
                "Programming Language :: Python :: 3.12",
-               "License :: OSI Approved :: MIT License",
-               "Operating System :: POSIX :: Linux",
-               "Operating System :: Microsoft :: Windows",
-               "Operating System :: Microsoft :: Windows :: Windows 7",
-               "Operating System :: Microsoft :: Windows :: Windows 10",
-               "Operating System :: Microsoft :: Windows :: Windows 11",
                "Topic :: Software Development",
-               "Topic :: Software Development :: Libraries",
-               "Topic :: Utilities"
+               "Topic :: Utilities",
               ]
 dependencies = []
 dynamic = ["version"]
-license = {file = "LICENSE"}
+keywords = [
+            "build",
+            "development",
+            "requirements",
+            "setup",
+            "utilities",
+           ]
+license = {text = "GNU GPL-3"}
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.6"
 
