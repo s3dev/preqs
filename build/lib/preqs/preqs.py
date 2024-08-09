@@ -291,9 +291,9 @@ class Requirements:
 
         """
         shash = hashlib.md5(content.encode()).hexdigest()
-        with open(self._ofile, 'rb') as f:
+        with open(self._ofile, 'r', encoding='utf-8') as f:  # Cannot be 'rb' for Windows.
             text = f.read()
-        fhash = hashlib.md5(text).hexdigest()
+        fhash = hashlib.md5(text.encode()).hexdigest()
         return shash == fhash
 
     @staticmethod
