@@ -55,6 +55,33 @@ class TestPreqs(TestBase):
         """Tasks to perform at the end of each test."""
         cls.restore_stderr()
 
+    def test00a__argp__invalid_path(self):
+        """Test the arg parser with an invalid path.
+
+        :Test:
+            - Verify the arg parser correctly flags an invalid path
+              containing '..'.
+            - Verify the exit code is as expected.
+
+        """
+        buf = io.StringIO()
+        # Inject an invalid path and re-check.
+        ap = preqs.ArgParser()
+        ap.parse()
+        ap._args.PATH = '/some/path/containing/../'
+        # Capture stdout.
+        with contextlib.redirect_stdout(buf):
+            # Test for sys.exit and capture the exit code.
+            with self.assertRaises(SystemExit) as cm:
+                ap._sanitise_path(ap._args.PATH)
+                tst1 = buf.getvalue()
+                tst2 = cm.exception.code
+                # Must be indented for tst1 and tst2 to be referenced.
+                with self.subTest('Error message'):
+                    self.assertIn('Invalid path detected.', tst1)
+                with self.subTest('Exit code'):
+                    self.assertEqual(100, tst2)
+
     def test01a__run__no_imports(self):
         """Test the ``run`` method for a project with no imports.
 

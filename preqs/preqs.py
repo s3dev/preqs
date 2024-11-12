@@ -82,6 +82,7 @@ class ArgParser:
         argp.add_argument('-h', '--help', help=self._h_help, action='help')
         argp.add_argument('-v', '--version', help=self._h_vers, action='version', version=self._epil)
         self._args = argp.parse_args()
+        self._sanitise_path(self._args.PATH)
 
     def _build_epilog(self) -> str:
         """Build the epilog string for terminal display.
@@ -96,6 +97,25 @@ class ArgParser:
             notice = f.read()
         epil = f'{notice}\n\n{self._proj} v{self._vers}'
         return epil
+
+    def _sanitise_path(self, path: str):
+        """Provide *basic* path sanitisation.
+
+        Args:
+            path (str): Path to be checked.
+
+        Note:
+            As only the user's PC is involved, and the ``PATH`` argument
+            is only used for module collection and to write the
+            requirements file, we're only looking to discourage the use
+            of ``..`` in the user-provided path.
+
+            This is a cursory anti-path-traversal check.
+
+        """
+        if '..' in path:
+            print('\n[ERROR]: Invalid path detected. Path cannot contain ".."; exiting.\n')
+            sys.exit(ExCode.ERR_CKINV.value)
 
 
 class CodeParser:
@@ -176,6 +196,7 @@ class ExCode(Enum):
     ERR_CLEAN = 40
     ERR_VERSN = 50
     ERR_WRITE = 60
+    ERR_CKINV = 100  # Check: Invalid path
     ERR_INITL = 255
 
 
