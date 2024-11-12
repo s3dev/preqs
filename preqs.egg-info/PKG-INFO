@@ -1,13 +1,13 @@
 Metadata-Version: 2.1
 Name: preqs
-Version: 0.1.0b4
+Version: 0.1.0
 Summary: A simple (and fast) requirements.txt file generator.
 Author-email: The Developers <development@s3dev.uk>
 License: GNU GPL-3
 Project-URL: Homepage, https://github.com/s3dev/preqs
 Project-URL: Repository, https://github.com/s3dev/preqs
 Keywords: build,development,requirements,setup,utilities
-Classifier: Development Status :: 4 - Beta
+Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
 Classifier: Operating System :: POSIX :: Linux
