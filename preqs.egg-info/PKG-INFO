@@ -1,29 +1,29 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: preqs
-Version: 0.1.0
+Version: 0.2.0
 Summary: A simple (and fast) requirements.txt file generator.
 Author-email: The Developers <development@s3dev.uk>
-License: GNU GPL-3
+License-Expression: GPL-3.0-or-later
 Project-URL: Homepage, https://github.com/s3dev/preqs
 Project-URL: Repository, https://github.com/s3dev/preqs
 Keywords: build,development,requirements,setup,utilities
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers
-Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
 Classifier: Operating System :: POSIX :: Linux
 Classifier: Operating System :: Microsoft :: Windows
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
 Classifier: Topic :: Software Development
 Classifier: Topic :: Utilities
-Requires-Python: >=3.6
+Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
+Requires-Dist: packaging
+Dynamic: license-file
 
 # A simple (and fast) requirements.txt file generator
 
@@ -63,6 +63,8 @@ positional arguments:
                         Defaults to the current directory.
 
 options:
+  -c, --check           Perform requirements.txt file version checks against the installed
+                        libraries, then exit.
   -d, --debug           Print verbose debugging output while processing.
   -i IGNORE_DIRS [IGNORE_DIRS ...], --ignore_dirs IGNORE_DIRS [IGNORE_DIRS ...]
                         One or more director(y|ies) to be ignored when collecting module files.
@@ -71,6 +73,16 @@ options:
                         
   -h, --help            Display this help and usage, then exit.
   -v, --version         Display the version and exit.
+
+Copyright (C) 2024-2025 | 73rd Street Development
+This program comes with ABSOLUTELY NO WARRANTY. This is free 
+software; you can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software
+Foundation.  A copy of the license is included with this 
+package.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 preqs <installed version>
 ```
@@ -118,6 +130,31 @@ By default, if a `requirements.txt` file exists, you will be alerted. The existi
 preqs --replace
 ```
 2. Check the current directory for a *new* `requirements.txt` file containing the project's external dependencies.
+
+### Case 5: Check a requirements file against the installed libraries
+The `--check` argument can be used to perform a version check between a requirements file and the installed libraries.
+
+1. If  `preqs` is run as follows, the `requirements.txt` file in the current directory is used:
+```bash
+preqs --check
+```
+
+Alternatively, the path to *any* requirements file can be specified in the path as:
+```bash
+preqs ~/Desktop/requirements.txt --check
+```
+
+This will output a report similar to the following, showing the status of each requirements file entry relative to the installed libraries:
+```
+Name                     Requirement    Installed      Status
+-----------------------------------------------------------------
+beautifulsoup4           4.13.4         n/a            Not installed
+colorama                 0.4.6          n/a            Not installed
+ipython                  8.31.0         8.30.0         Older
+spyder-kernels           3.0.1          3.0.2          Newer
+jupyter_client           8.6.3          8.6.3          Same
+requests                 2.32.3         n/a            Not installed
+```
 
 
 ## Additional information

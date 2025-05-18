@@ -5,7 +5,7 @@
 :Purpose:   The preqs project is a simple (and fast) requirements.txt
             file generator.
 
-:Platform:  Linux/Windows | Python 3.6+
+:Platform:  Linux/Windows | Python 3.8+
 :Developer: J Berendt
 :Email:     support@s3dev.uk
 
@@ -17,23 +17,26 @@
 
 """
 # pylint: disable=import-error
+# pylint: disable=wrong-import-position
 
+# Setup for relative imports
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 import argparse
 import ast
-import os
 import hashlib
 import logging
-import sys
 import traceback
 from datetime import datetime as dt
-from enum import Enum
 from glob import glob
 from importlib import metadata
 # locals
-try:
-    from _version import __version__
-except ImportError:
-    from ._version import __version__
+from check import RequirementCheck
+from enums import ExCode
+from _version import __version__
+
+logger = logging.getLogger(__name__)
 
 
 class ArgParser:
@@ -44,6 +47,8 @@ class ArgParser:
     _vers = __version__
     _desc = 'A simple (and fast) requirements.txt file generator.'
     _usag = 'preqs [PATH] [options]'
+    _h_chck = ('Perform requirements.txt file version checks against the installed\n'
+               'libraries, then exit.')
     _h_dbug = 'Print verbose debugging output while processing.'
     _h_dirs = 'One or more director(y|ies) to be ignored when collecting module files.'
     _h_path = ('Path to the project\'s root directory.\n'
@@ -75,6 +80,7 @@ class ArgParser:
                                        add_help=False)
         # Order matters here as it affects the display -->
         argp.add_argument('PATH', help=self._h_path, nargs='?', default=os.getcwd())
+        argp.add_argument('-c', '--check', help=self._h_chck, action='store_true')
         argp.add_argument('-d', '--debug', help=self._h_dbug, action='store_true')
         argp.add_argument('-i', '--ignore_dirs', help=self._h_dirs, nargs='+')
         argp.add_argument('-p', '--print', help=self._h_prnt, action='store_true')
@@ -82,6 +88,7 @@ class ArgParser:
         argp.add_argument('-h', '--help', help=self._h_help, action='help')
         argp.add_argument('-v', '--version', help=self._h_vers, action='version', version=self._epil)
         self._args = argp.parse_args()
+        self._setup_logger()
         self._sanitise_path(self._args.PATH)
 
     def _build_epilog(self) -> str:
@@ -116,6 +123,11 @@ class ArgParser:
         if '..' in path:
             print('\n[ERROR]: Invalid path detected. Path cannot contain ".."; exiting.\n')
             sys.exit(ExCode.ERR_CKINV.value)
+
+    def _setup_logger(self):
+        """Setup the project logger."""
+        level = logging.DEBUG if self._args.debug else logging.INFO
+        logging.basicConfig(level=level, format="[%(levelname)s]: %(message)s")
 
 
 class CodeParser:
@@ -186,20 +198,6 @@ class CodeParser:
         return imports
 
 
-class ExCode(Enum):
-    """Exit code enumerators."""
-
-    GEN_OK = 0
-    ERR_EXIST = 10
-    ERR_FILES = 20
-    ERR_IMPTS = 30
-    ERR_CLEAN = 40
-    ERR_VERSN = 50
-    ERR_WRITE = 60
-    ERR_CKINV = 100  # Check: Invalid path
-    ERR_INITL = 255
-
-
 class Requirements:
     """Python project requirements capture class.
 
@@ -211,6 +209,7 @@ class Requirements:
 
     """
 
+    _DIR_ROOT = os.path.dirname(os.path.realpath(__file__))
     _FILE_EXTS = ['*.py', '*.pyw']
     _IGNORE_DIRS = list(map(os.path.realpath, [
                                                '.ipynb_checkpoints',
@@ -231,7 +230,22 @@ class Requirements:
         self._reqs = set()              # Set of requirements to be written.
         self._ofile = None              # Full path to the output file.
         self._setup_parse_arguments()
-        self._setup_logger()
+
+    def check(self):
+        """Perform requirements file version checks.
+
+        This method is invoked from the command line via the ``--check``
+        argument.
+
+        """
+        try:
+            rc = RequirementCheck(path=self._args.PATH)
+            rc.check()
+        except Exception:  # pragma: nocover
+            print()
+            logger.critical('The following error occurred:\n\n%s\nProcessing aborted.\n',
+                            traceback.format_exc())
+        sys.exit(rc.exit_code.value)
 
     def run(self):
         """Program entry-point and requirements generator.
@@ -249,13 +263,14 @@ class Requirements:
             if s: s = self._find_files()
             if s: s = self._collect_imports()
             if s: s = self._clean_imports()
+            if s: s = self._map_imports()
             if s: s = self._get_installed_version()
             if s: s = self._write()
             self._shutdown_msgs()
         except Exception:  # pragma: nocover
             print()
-            logging.critical('The following error occurred:\n\n%s\nProcessing aborted.\n',
-                             traceback.format_exc())
+            logger.critical('The following error occurred:\n\n%s\nProcessing aborted.\n',
+                            traceback.format_exc())
         sys.exit(self._excode.value)
 
     def _clean_imports(self) -> bool:
@@ -285,11 +300,11 @@ class Requirements:
             exit code being set.
 
         """
-        logging.debug('Starting import statement extraction on %d files ...', len(self._files))
+        logger.debug('Starting import statement extraction on %d files ...', len(self._files))
         for f in self._files:
-            logging.debug('Reading file: %s', os.path.basename(f))
+            logger.debug('Reading file: %s', os.path.basename(f))
             imports = CodeParser.extract_imports(path=f)
-            logging.debug('- Found imports: %s', imports if imports else None)
+            logger.debug('- Found imports: %s', imports if imports else None)
             if imports:
                 self._imps = self._imps.union(imports)
         # Set an import as 'spam' rather than 'spam.eggs'
@@ -363,7 +378,7 @@ class Requirements:
                'Alternatively, pass the --replace flag to ignore this message and replace\n'
                'the existing file.\n')
         print()
-        logging.warning(msg, self._ofile)
+        logger.warning(msg, self._ofile)
         self._excode = ExCode.ERR_EXIST
         return False
 
@@ -382,7 +397,7 @@ class Requirements:
             False with the associates exit code being set.
 
         """
-        logging.debug('Starting module file collection ...')
+        logger.debug('Starting module file collection ...')
         files = set()
         tmp = []
         for ext in self._FILE_EXTS:
@@ -399,8 +414,8 @@ class Requirements:
             if all((dir_ not in file_ for dir_ in self._IGNORE_DIRS)):
                 files.add(file_)
         if self._args.debug:
-            logging.debug('Module files found: %s',
-                          ''.join(map('\n\t - {}'.format, files)))
+            logger.debug('Module files found: %s',
+                         ''.join(map('\n\t - {}'.format, files)))
         self._files = files
         if not self._files:
             self._excode = ExCode.ERR_FILES
@@ -426,10 +441,30 @@ class Requirements:
                 self._reqs.add((pkg, 'Unknown or not installed'))
         return True
 
-    def _setup_logger(self):
-        """Setup: Set the project logger."""
-        level = logging.DEBUG if self._args.debug else logging.INFO
-        logging.basicConfig(level=level, format="[%(levelname)s]: %(message)s")
+    def _map_imports(self) -> bool:
+        """Map any imports with a name different from their PyPI name.
+
+        For example, ``sqlalchemy`` is mapped to ``SQLAlchemy`` and
+        ``mysql`` is mapped to ``mysql-connector-python``. Without the
+        mapping, the version for these libraries would not be found, and
+        thus excluded from the output requirements file.
+
+        Returns:
+            bool: True if the mapping is successful, otherwise False.
+
+        """
+        # pylint: disable=unnecessary-lambda-assignment
+        # Read and process mappings file.
+        filter_ = lambda x: x and not x.startswith('#')
+        with open(os.path.join(self._DIR_ROOT, '.mappings'), 'r', encoding='utf-8') as f:
+            data = filter(filter_, (line.strip() for line in f))
+            mapping = dict(map(lambda x: x.split(':'), data))
+        # Replace any imports with their mapped value.
+        _imps = {mapping.get(i, i) for i in self._imps}  # If not found, just use original.
+        logger.debug('Collected import names: %s', self._imps)
+        logger.debug('Mapped import names: %s', _imps)
+        self._imps = _imps
+        return self._imps == _imps
 
     def _setup_parse_arguments(self):
         """Setup: Parse the command line arguments.
@@ -451,28 +486,28 @@ class Requirements:
 
     def _shutdown_msgs(self):
         """Print any shutdown messages."""
-        logging.debug('All imports being reported: %s', self._imps)
-        logging.debug('All requirements being reported: %s', self._reqs)
+        logger.debug('All imports being reported: %s', self._imps)
+        logger.debug('All requirements being reported: %s', self._reqs)
         if self._excode == ExCode.GEN_OK:
             if not self._args.print:
                 print()
-                logging.info('The requirements file has been written here:\n- %s\n', self._ofile)
+                logger.info('The requirements file has been written here:\n- %s\n', self._ofile)
         elif self._excode == ExCode.ERR_FILES:
             print()
-            logging.warning('No Python modules found in this project.\n')
+            logger.warning('No Python modules found in this project.\n')
         elif self._excode == ExCode.ERR_IMPTS:
             print()
-            logging.warning('No imports found for this project.\n')
+            logger.warning('No imports found for this project.\n')
         elif self._excode != ExCode.ERR_EXIST:  # pragma: nocover
-            logging.error('An error occurred while processing. Exit code: %d', self._excode.value)
+            logger.error('An error occurred while processing. Exit code: %d', self._excode.value)
             print()
 
     def _startup_msgs(self):
         """Print any startup messages."""
-        logging.debug('Starting up ...')
+        logger.debug('Starting up ...')
         if self._args.debug:
-            logging.debug('Ignoring the following directories: %s',
-                          ''.join(map('\n\t - {}'.format, self._IGNORE_DIRS)))
+            logger.debug('Ignoring the following directories: %s',
+                         ''.join(map('\n\t - {}'.format, self._IGNORE_DIRS)))
 
     def _write(self) -> bool:
         """Write (or display) the requirements file.
@@ -519,14 +554,23 @@ class Requirements:
         return True
 
 
-#%%
+#%% Module and application run controllers
+
+def __main_runner():  # pragma: nocover
+    """PRIVATE Centralised main runner method for import and app use."""
+    # pylint: disable=protected-access  # OK: _args
+    r = Requirements()
+    logger.debug('sys.path: %s', sys.path)
+    logger.debug('CLI arguments: %s', r._args)
+    if r._args.check:
+        r.check()
+    else:
+        r.run()
 
 # Prevent from running on module import.
-
 # Enable running as either a script (dev/debugging) or as an executable.
 if __name__ == '__main__':  # pragma: nocover
-    r = Requirements()
-    r.run()
+    __main_runner()
 else:  # pragma: nocover
     def main():
         """Entry-point exposed for the executable.
@@ -536,6 +580,4 @@ else:  # pragma: nocover
         executable.
 
         """
-        # pylint: disable=redefined-outer-name
-        r = Requirements()
-        r.run()
+        __main_runner()

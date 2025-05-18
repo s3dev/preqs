@@ -1,9 +1,11 @@
 Pylint Summary:
 ------------------------
+preqs_check.plr: 10.00/10
+preqs_enums.plr: 10.00/10
 preqs_preqs.plr: 10.00/10
 testlibs_msgs.plr: 10.00/10
 tests_base.plr: 10.00/10
 tests_template.plr: 10.00/10
 tests_test_preqs.plr: 10.00/10
 ------------------------
-Run date: Tue 12 Nov 13:10:39 GMT 2024
+Run date: Mon 19 May 11:01:46 BST 2025

@@ -5,7 +5,7 @@
 
 :Platform:  Linux/Windows | Python 3.6+
 :Developer: J Berendt
-:Email:     jeremy.berendt@rolls-royce.com
+:Email:     development@s3dev.uk
 
 :Comments:  n/a
 

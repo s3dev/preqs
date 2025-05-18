@@ -36,6 +36,8 @@ positional arguments:
                         Defaults to the current directory.
 
 options:
+  -c, --check           Perform requirements.txt file version checks against the installed
+                        libraries, then exit.
   -d, --debug           Print verbose debugging output while processing.
   -i IGNORE_DIRS [IGNORE_DIRS ...], --ignore_dirs IGNORE_DIRS [IGNORE_DIRS ...]
                         One or more director(y|ies) to be ignored when collecting module files.
@@ -44,6 +46,16 @@ options:
                         
   -h, --help            Display this help and usage, then exit.
   -v, --version         Display the version and exit.
+
+Copyright (C) 2024-2025 | 73rd Street Development
+This program comes with ABSOLUTELY NO WARRANTY. This is free 
+software; you can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software
+Foundation.  A copy of the license is included with this 
+package.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 preqs <installed version>
 ```
@@ -91,6 +103,31 @@ By default, if a `requirements.txt` file exists, you will be alerted. The existi
 preqs --replace
 ```
 2. Check the current directory for a *new* `requirements.txt` file containing the project's external dependencies.
+
+### Case 5: Check a requirements file against the installed libraries
+The `--check` argument can be used to perform a version check between a requirements file and the installed libraries.
+
+1. If  `preqs` is run as follows, the `requirements.txt` file in the current directory is used:
+```bash
+preqs --check
+```
+
+Alternatively, the path to *any* requirements file can be specified in the path as:
+```bash
+preqs ~/Desktop/requirements.txt --check
+```
+
+This will output a report similar to the following, showing the status of each requirements file entry relative to the installed libraries:
+```
+Name                     Requirement    Installed      Status
+-----------------------------------------------------------------
+beautifulsoup4           4.13.4         n/a            Not installed
+colorama                 0.4.6          n/a            Not installed
+ipython                  8.31.0         8.30.0         Older
+spyder-kernels           3.0.1          3.0.2          Newer
+jupyter_client           8.6.3          8.6.3          Same
+requests                 2.32.3         n/a            Not installed
+```
 
 
 ## Additional information

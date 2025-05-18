@@ -5,7 +5,7 @@
 
 :Platform:  Linux/Windows | Python 3.6+
 :Developer: J Berendt
-:Email:     jeremy.berendt@rolls-royce.com
+:Email:     development@s3dev.uk
 
 :Comments:  n/a
 
@@ -107,6 +107,12 @@ class TestPreqs(TestBase):
     def test01b__run__no_args(self):
         """Test the ``run`` method with no arguments.
 
+        Note: This test will fail if different versions of the libraries
+              are installed in the environment.
+
+              If this is the case, check the content of the target
+              requirements file and re-generage the MD5 checksum.
+
         :Test:
             - Verify the exit code is as expected.
             - Verify the hash of the requirements file is as expected.
@@ -123,7 +129,7 @@ class TestPreqs(TestBase):
             self.assertEqual(exp, tst, msg=self._MSG1.format(exp, tst))
         with self.subTest('File hash'):
             tst = self.calc_file_hash(pkg=pkg)
-            exp = '50f5706f5ccec946a2c6d1a7e1862c47'
+            exp = 'ca7450abf29469281851a206e63a18df'
             self.assertEqual(tst, exp, msg=self._MSG1.format(tst, exp))
         self.remove_requirements_file(pkg=pkg)
 
@@ -164,6 +170,12 @@ class TestPreqs(TestBase):
     def test01e__run__ignore_dirs(self):
         """Test the ``run`` method with the --ignore_dirs flag.
 
+        Note: This test will fail if different versions of the libraries
+              are installed in the environment.
+
+              If this is the case, check the content of the target
+              requirements file and re-generage the MD5 checksum.
+
         :Test:
             - Verify the exit code is as expected.
             - Verify the hash of the requirements file is as expected.
@@ -182,7 +194,7 @@ class TestPreqs(TestBase):
             self.assertEqual(exp, tst, msg=self._MSG1.format(exp, tst))
         with self.subTest('File hash'):
             tst = self.calc_file_hash(pkg=pkg)
-            exp = '8f13b4b6c61cdbe2acf7abd80e929335'
+            exp = 'd69d47481a4e4709743abbb55ac99cd4'
             self.assertEqual(exp, tst, msg=self._MSG1.format(exp, tst))
         self.remove_requirements_file(pkg=pkg)
 
@@ -223,6 +235,42 @@ class TestPreqs(TestBase):
             with self.subTest(f'{idx}: {req}'):
                 self.assertIn(str(req), stdout[idx+3])
 
+    def test04a__check(self):
+        """Test the ``check`` method via a black box test.
+
+        Note: This test does *not* test the entire module. That is done
+              by the ``test_check.py`` test module.
+
+        Note: This test will fail if different versions of the libraries
+              are installed in the environment.
+
+              If this is the case, check the content of the target
+              requirements file and re-generage the MD5 checksum.
+
+        :Test:
+            - Verify the exit code is as expected.
+            - Verify the display output is as expected.
+
+        """
+        buff = io.StringIO()
+        pkg = 'pkg1'
+        with self.assertRaises(SystemExit) as cm:
+            r = preqs.Requirements()
+            r._args.PATH = os.path.join(self._DIR_RESC, pkg)
+            r.run()  # Generate the requirements file to be checked.
+        tst1 = cm.exception.code
+        exp1 = 0
+        with self.assertRaises(SystemExit):
+            with contextlib.redirect_stdout(buff):
+                r.check()
+        self.remove_requirements_file(pkg=pkg)
+        text = buff.getvalue()
+        tst2 = hashlib.md5(text.encode()).hexdigest()
+        exp2 = '7c5fc8de8cafd79ae84b7b17276fa4c0'
+        with self.subTest('Exit code'):
+            self.assertEqual(exp1, tst1)
+        with self.subTest('Report output'):
+            self.assertEqual(exp2, tst2)
 
 #%% Helpers
 

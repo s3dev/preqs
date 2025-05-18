@@ -6,7 +6,7 @@
 
 :Platform:  Linux/Windows | Python 3.6+
 :Developer: J Berendt
-:Email:     jeremy.berendt@rolls-royce.com
+:Email:     development@s3dev.uk
 
 :Example:
     Example code use.
@@ -26,6 +26,7 @@
 """
 # pylint: disable=wrong-import-position
 
+import hashlib
 import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -74,3 +75,33 @@ class TestBase(unittest.TestCase):
         """Restore STDERR to reinstate output."""
         cls._fstderr.close()
         sys.stderr = cls._stderr
+
+    def calc_file_hash(self, pkg: str) -> str:
+        """Calculate an MD5 hash against a requirements file.
+
+        As each file has a timestamp at the end, the last line of the
+        file is excluded from the hash.
+
+        Args:
+            pkg (str): Name of the package used for the test.
+
+        Returns:
+            str: An MD5 hash of the requirements file, except the final
+            line containing the timestamp.
+
+        """
+        with open(os.path.join(self._DIR_RESC, pkg, self._FN), encoding='utf-8') as f:
+            text = f.readlines()
+        return hashlib.md5(''.join(text[:-1]).encode()).hexdigest()
+
+    def remove_requirements_file(self, pkg: str):
+        """Remove the requirements file from the given package.
+
+        Args:
+            pkg (str): Name of the package from which the file is to be
+                removed.
+
+        """
+        path = os.path.join(self._DIR_RESC, pkg, 'requirements.txt')
+        if os.path.exists(path):
+            os.remove(path)

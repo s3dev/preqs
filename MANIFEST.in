@@ -3,3 +3,4 @@
 # Single files to be included.
 include requirements.txt
 include preqs/NOTICE
+include preqs/.mappings
